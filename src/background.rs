@@ -16,8 +16,8 @@ impl<'s> Background<'s> {
 
 impl<'s> Drawable for Background<'s> {
     fn draw<'se, 'tex, 'sh, 'shte> (
-        &'se self, 
-        target: &mut RenderTarget, 
+        &'se self,
+        target: &mut RenderTarget,
         states: RenderStates<'tex, 'sh, 'shte>
     )
         where 'se: 'sh {

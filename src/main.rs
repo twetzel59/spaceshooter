@@ -17,15 +17,19 @@ fn main() {
     
     let mut ship = Ship::new(&res, &size);
     
-    //let mut bullet_mgr = bullets;
+    let mut bullet_mgr = bullets::BulletManager::new(&res, &size);
     
     let mut clock = Clock::start();
+    
     'game: loop {
         let delta_t = clock.restart().as_seconds();
         
         win.clear(&Color::black());
         win.draw(&back);
         win.draw(&ship);
+        for i in bullet_mgr.bullets.iter() {
+            win.draw(i);
+        }
         win.display();
         
         while let Some(e) = win.poll_event() {

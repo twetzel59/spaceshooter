@@ -13,7 +13,7 @@ impl<'s> Bullet<'s> {
         sprite.set_scale2f(win_size.x as f32 / 1600., win_size.y as f32 / 1200.);
         
         Bullet {
-            sprite
+            sprite,
         }
     }
 }
@@ -30,8 +30,36 @@ impl<'s> Drawable for Bullet<'s> {
     }
 }
 
+pub struct BulletManager<'s> {
+    pub bullets: Vec<Bullet<'s>>
+}
+
+impl<'s> BulletManager<'s> {
+    pub fn new(res: &'s Resources, win_size: &Vector2u) -> BulletManager<'s> {
+        let mut bullets = Vec::new();
+        bullets.push(Bullet::new(res, win_size));
+        
+        BulletManager {
+            bullets,
+        }
+    }
+}
+
 /*
-pub struct BulletManager {
+impl<'s> IntoIterator for BulletManager<'s> {
+    type Item = Bullet<'s>;
+    type IntoIter = ::std::vec::IntoIter<Bullet<'s>>;
     
+    fn into_iter(self) -> Self::IntoIter {
+        self.bullets.into_iter()
+    }
+}
+*/
+
+/*
+impl<'s> AsRef<Bullet<'s>> for BulletManager<'s> {
+    fn as_ref(&self) -> &Bullet<'s> {
+        self.bullets.as_ref()
+    } 
 }
 */

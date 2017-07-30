@@ -17,6 +17,8 @@ fn main() {
     
     let mut ship = Ship::new(&res, &size);
     
+    //let mut bullet_mgr = bullets;
+    
     let mut clock = Clock::start();
     'game: loop {
         let delta_t = clock.restart().as_seconds();

@@ -4,6 +4,7 @@ pub struct Resources {
     background: Texture,
     ship: Texture,
     enemy: Texture,
+    bullet: Texture,
 }
 
 impl Resources {
@@ -12,6 +13,7 @@ impl Resources {
             background: Texture::from_file("res/space.png").unwrap(),
             ship: Texture::from_file("res/ship.png").unwrap(),
             enemy: Texture::from_file("res/enemy.png").unwrap(),
+            bullet: Texture::from_file("res/bullet.png").unwrap(),
         }
     }
     
@@ -25,5 +27,9 @@ impl Resources {
     
     pub fn enemy(&self) -> &TextureRef {
         &self.enemy
+    }
+    
+    pub fn bullet(&self) -> &TextureRef {
+        &self.bullet
     }
 }

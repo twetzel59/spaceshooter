@@ -1,3 +1,4 @@
+extern crate core;
 extern crate sfml;
 
 use sfml::graphics::{RenderWindow};

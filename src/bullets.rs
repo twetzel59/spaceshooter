@@ -1,7 +1,10 @@
+use core::slice;
 use sfml::graphics::*;
 use sfml::system::Vector2u;
 
 use resources::Resources;
+
+const SPEED: f32 = 1000.;
 
 pub struct Bullet<'s> {
     sprite: Sprite<'s>
@@ -10,11 +13,16 @@ pub struct Bullet<'s> {
 impl<'s> Bullet<'s> {
     fn new(res: &'s Resources, win_size: &Vector2u) -> Bullet<'s> {
         let mut sprite = Sprite::with_texture(res.bullet());
-        sprite.set_scale2f(win_size.x as f32 / 1600., win_size.y as f32 / 1200.);
+        sprite.set_scale2f(win_size.x as f32 / 3200., win_size.y as f32 / 2400.);
+        sprite.set_position2f(0., win_size.y as f32 - res.bullet().size().y as f32);
         
         Bullet {
             sprite,
         }
+    }
+    
+    fn update(&mut self, delta: f32) {
+        self.sprite.move2f(0., -SPEED * delta);
     }
 }
 
@@ -31,7 +39,7 @@ impl<'s> Drawable for Bullet<'s> {
 }
 
 pub struct BulletManager<'s> {
-    pub bullets: Vec<Bullet<'s>>
+    bullets: Vec<Bullet<'s>>
 }
 
 impl<'s> BulletManager<'s> {
@@ -43,23 +51,19 @@ impl<'s> BulletManager<'s> {
             bullets,
         }
     }
-}
-
-/*
-impl<'s> IntoIterator for BulletManager<'s> {
-    type Item = Bullet<'s>;
-    type IntoIter = ::std::vec::IntoIter<Bullet<'s>>;
     
-    fn into_iter(self) -> Self::IntoIter {
-        self.bullets.into_iter()
+    pub fn update(&mut self, delta: f32) {
+        for i in &mut self.bullets {
+            i.update(delta);
+        }
     }
 }
-*/
 
-/*
-impl<'s> AsRef<Bullet<'s>> for BulletManager<'s> {
-    fn as_ref(&self) -> &Bullet<'s> {
-        self.bullets.as_ref()
-    } 
+impl<'a, 's> IntoIterator for &'a BulletManager<'s> {
+    type Item = &'a Bullet<'s>;
+    type IntoIter = slice::Iter<'a, Bullet<'s>>;
+    
+    fn into_iter(self) -> Self::IntoIter {
+        self.bullets.iter()
+    }
 }
-*/

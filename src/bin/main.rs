@@ -24,10 +24,12 @@ fn main() {
     'game: loop {
         let delta_t = clock.restart().as_seconds();
         
+        bullet_mgr.update(delta_t);
+        
         win.clear(&Color::black());
         win.draw(&back);
         win.draw(&ship);
-        for i in bullet_mgr.bullets.iter() {
+        for i in &bullet_mgr {
             win.draw(i);
         }
         win.display();

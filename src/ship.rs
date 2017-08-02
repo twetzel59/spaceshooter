@@ -49,6 +49,10 @@ impl<'s> Ship<'s> {
             self.sprite.set_position2f(self.right_max, pos.y);
         }
     }
+    
+    pub fn bounds(&self) -> FloatRect {
+        self.sprite.global_bounds()
+    }
 }
 
 impl<'s> Drawable for Ship<'s> {

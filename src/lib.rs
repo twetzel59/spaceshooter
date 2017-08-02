@@ -21,6 +21,7 @@ pub fn create_window() -> RenderWindow {
                             .unwrap();
                             
     win.set_vertical_sync_enabled(true);
+    win.set_key_repeat_enabled(false);
     
     win
 }

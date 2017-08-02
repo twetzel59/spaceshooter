@@ -40,6 +40,9 @@ fn main() {
                     break 'game,
                 //Event::KeyPressed { code: Key::Left, .. } => ship.on_left(delta_t),
                 //Event::KeyPressed { code: Key::Right, .. } => ship.on_right(delta_t),
+                Event::KeyPressed { code: Key::Space, .. } => {
+                    bullet_mgr.shoot(&ship.bounds());
+                },
                 _ => {},
             }
         }

@@ -1,4 +1,5 @@
 extern crate core;
+extern crate rand;
 extern crate sfml;
 
 use sfml::graphics::{RenderWindow};
@@ -13,6 +14,7 @@ pub mod resources;
 pub mod ship;
 pub mod enemies;
 pub mod bullets;
+pub mod collision;
 
 pub fn create_window() -> RenderWindow {
     let mut win = RenderWindow::new(VideoMode::new(800, 600, 32), "rsSpaceShooter",

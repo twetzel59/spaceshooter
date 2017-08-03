@@ -5,3 +5,4 @@ authors = ["twetzel59 <twetzel59@gmail.com>"]
 
 [dependencies]
 sfml = "0.12.0"
+rand = "0.3.16"

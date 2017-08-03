@@ -27,6 +27,7 @@ fn main() {
         
         bullet_mgr.update(delta_t);
         enemy_mgr.update(delta_t);
+        collision::handle_collisions(&mut enemy_mgr, &mut bullet_mgr);
         
         win.clear(&Color::black());
         win.draw(&back);

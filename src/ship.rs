@@ -4,7 +4,7 @@ use sfml::system::Vector2u;
 
 use resources::Resources;
 
-const SPEED: f32 = 512.;
+const SPEED: f32 = 728.;
 
 pub struct Ship<'s> {
     sprite: Sprite<'s>,

@@ -47,6 +47,10 @@ impl<'s> Bullet<'s> {
         
         self.sprite.set_position2f(ship_bounds.left + ship_bounds.width / 2. - width / 2., ship_bounds.top);
     }
+    
+    pub fn bounds(&self) -> FloatRect {
+        self.sprite.global_bounds()
+    }
 }
 
 impl<'s> Drawable for Bullet<'s> {

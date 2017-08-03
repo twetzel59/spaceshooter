@@ -18,6 +18,7 @@ fn main() {
     let mut ship = Ship::new(&res, &size);
     
     let mut bullet_mgr = bullets::BulletManager::new(&res, &size);
+    let mut enemy_mgr = enemies::EnemyManager::new(&res, &size);
     
     let mut clock = Clock::start();
     
@@ -25,11 +26,15 @@ fn main() {
         let delta_t = clock.restart().as_seconds();
         
         bullet_mgr.update(delta_t);
+        enemy_mgr.update(delta_t);
         
         win.clear(&Color::black());
         win.draw(&back);
         win.draw(&ship);
         for i in &bullet_mgr {
+            win.draw(i);
+        }
+        for i in &enemy_mgr {
             win.draw(i);
         }
         win.display();

@@ -68,7 +68,7 @@ pub struct BulletManager<'s> {
 
 impl<'s> BulletManager<'s> {
     pub fn new(res: &'s Resources, win_size: &Vector2u) -> BulletManager<'s> {
-        let mut active = Vec::new();
+        let mut active = Vec::with_capacity(64);
         //active.push(Bullet::new(res, win_size));
         
         let mut inactive = Vec::with_capacity(64);

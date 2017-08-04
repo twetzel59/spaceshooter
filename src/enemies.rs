@@ -4,9 +4,10 @@ use rand::distributions::{IndependentSample, Range};
 use sfml::graphics::*;
 use sfml::system::Vector2u;
 
+use attackable::*;
 use resources::Resources;
 
-const MAX_ENEMY_NUMBER: u32 = 4;
+const MAX_ENEMY_NUMBER: u32 = 8;
 const WIN_SIDE_PADDING: u32 = 64;
 const SPEED_RANGE: (u32, u32) = (300, 550);
 
@@ -14,18 +15,24 @@ pub struct Enemy<'s> {
     sprite: Sprite<'s>,
     speed: u32,
     number: u32,
+    dead: bool,
 }
 
 impl<'s> Enemy<'s> {
-    fn new(res: &'s Resources) -> Enemy<'s> {
+    fn new(res: &'s Resources, number: u32, win_size: &Vector2u) -> Enemy<'s> {
         let mut sprite = Sprite::with_texture(res.enemy());
-        //sprite.set_scale2f(0.5, 0.5);
+        sprite.set_scale2f(0.5, 0.5);
         
-        Enemy {
+        let mut e = Enemy {
             sprite,
             speed: 0,
             number: 0,
-        }
+            dead: false,
+        };
+        
+        e.spawn(number, win_size);
+        
+        e
     }
     
     fn update(&mut self, delta: f32, win_size: &Vector2u) {
@@ -48,10 +55,26 @@ impl<'s> Enemy<'s> {
                                    -bounds.height);
         
         self.speed = Range::new(SPEED_RANGE.0, SPEED_RANGE.1).ind_sample(&mut rand::thread_rng());
+        
+        self.dead = false;
     }
     
     pub fn bounds(&self) -> FloatRect {
         self.sprite.global_bounds()
+    }
+}
+
+impl<'s> Attackable for Enemy<'s> {
+    fn die(&mut self) {
+        self.dead = true;
+    }
+    
+    fn check(&self) -> Status {
+        if self.dead {
+            Status::Dead
+        } else {
+            Status::Alive
+        }
     }
 }
 
@@ -77,32 +100,34 @@ impl<'s> EnemyManager<'s> {
     pub fn new(res: &'s Resources, win_size: &Vector2u) -> EnemyManager<'s> {
         let mut active = Vec::with_capacity(32);
         
-        let mut test = Enemy::new(res);
-        test.spawn(0, win_size);
-        active.push(test);
-        
-        let mut test = Enemy::new(res);
-        test.spawn(1, win_size);
-        active.push(test);
-        
-        let mut test = Enemy::new(res);
-        test.spawn(2, win_size);
-        active.push(test);
-        
-        let mut test = Enemy::new(res);
-        test.spawn(3, win_size);
-        active.push(test);
+        for i in 0..MAX_ENEMY_NUMBER {
+            active.push(Enemy::new(res, i, win_size));
+        }
         
         EnemyManager {
             active,
-            inactive: Vec::with_capacity(32),
+            inactive: Vec::with_capacity(MAX_ENEMY_NUMBER as usize),
             win_size: win_size.clone(),
         }        
     }
     
     pub fn update(&mut self, delta: f32) {
-        for i in &mut self.active {
-            i.update(delta, &self.win_size);
+        let mut i: usize = 0;
+        loop {
+            if i >= self.active.len() {
+                break;
+            }
+            
+            self.active[i].update(delta, &self.win_size);
+            
+            match self.active[i].check() {
+                Status::Dead => {
+                    self.inactive.push(self.active.remove(i));
+                },
+                _ => {},
+            }
+            
+            i += 1;
         }
     }
 }
@@ -113,5 +138,14 @@ impl<'a, 's> IntoIterator for &'a EnemyManager<'s> {
     
     fn into_iter(self) -> Self::IntoIter {
         self.active.iter()
+    }
+}
+
+impl<'a, 's> IntoIterator for &'a mut EnemyManager<'s> {
+    type Item = &'a mut Enemy<'s>;
+    type IntoIter = slice::IterMut<'a, Enemy<'s>>;
+    
+    fn into_iter(mut self) -> Self::IntoIter {
+        self.active.iter_mut()
     }
 }

@@ -5,6 +5,7 @@ extern crate sfml;
 use sfml::graphics::{RenderWindow};
 use sfml::window::{ContextSettings, style, VideoMode};
 
+pub use attackable::Attackable;
 pub use background::Background;
 pub use resources::Resources;
 pub use ship::Ship;
@@ -15,6 +16,8 @@ pub mod ship;
 pub mod enemies;
 pub mod bullets;
 pub mod collision;
+
+mod attackable;
 
 pub fn create_window() -> RenderWindow {
     let mut win = RenderWindow::new(VideoMode::new(800, 600, 32), "rsSpaceShooter",

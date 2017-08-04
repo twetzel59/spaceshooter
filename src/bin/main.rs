@@ -25,19 +25,19 @@ fn main() {
     'game: loop {
         let delta_t = clock.restart().as_seconds();
         
+        collision::handle_collisions(&mut enemy_mgr, &mut bullet_mgr);
         bullet_mgr.update(delta_t);
         enemy_mgr.update(delta_t);
-        collision::handle_collisions(&mut enemy_mgr, &mut bullet_mgr);
         
         win.clear(&Color::black());
         win.draw(&back);
-        win.draw(&ship);
         for i in &bullet_mgr {
             win.draw(i);
         }
         for i in &enemy_mgr {
             win.draw(i);
         }
+        win.draw(&ship);
         win.display();
         
         while let Some(e) = win.poll_event() {

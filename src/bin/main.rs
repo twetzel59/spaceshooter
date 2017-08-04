@@ -20,12 +20,16 @@ fn main() {
     let mut bullet_mgr = bullets::BulletManager::new(&res, &size);
     let mut enemy_mgr = enemies::EnemyManager::new(&res, &size);
     
+    let mut scoreboard = Scoreboard::new(&res, &size);
+    
     let mut clock = Clock::start();
     
     'game: loop {
         let delta_t = clock.restart().as_seconds();
         
-        collision::handle_collisions(&mut enemy_mgr, &mut bullet_mgr);
+        if collision::handle_collisions(&mut enemy_mgr, &mut bullet_mgr) {
+            scoreboard.score();
+        }
         bullet_mgr.update(delta_t);
         enemy_mgr.update(delta_t);
         
@@ -38,6 +42,7 @@ fn main() {
             win.draw(i);
         }
         win.draw(&ship);
+        win.draw(&scoreboard);
         win.display();
         
         while let Some(e) = win.poll_event() {

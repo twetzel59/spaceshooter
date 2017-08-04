@@ -56,13 +56,11 @@ impl<'s> Ship<'s> {
 }
 
 impl<'s> Drawable for Ship<'s> {
-    fn draw<'se, 'tex, 'sh, 'shte> (
-        &'se self,
-        target: &mut RenderTarget,
-        states: RenderStates<'tex, 'sh, 'shte>
-    )
-        where 'se: 'sh {
-        
+    fn draw<'se, 'tex, 'sh, 'shte>(&'se self, 
+                                   target: &mut RenderTarget,
+                                   states: RenderStates<'tex, 'sh, 'shte>)
+        where 'se: 'sh
+    {
         target.draw_sprite(&self.sprite, states);
     }
 }

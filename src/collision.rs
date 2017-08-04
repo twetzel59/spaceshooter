@@ -4,15 +4,20 @@ use attackable::Attackable;
 use enemies::*;
 use bullets::*;
 
-pub fn handle_collisions(enemies: &mut EnemyManager, bullets: &mut BulletManager) {
+pub fn handle_collisions(enemies: &mut EnemyManager, bullets: &mut BulletManager) -> bool {
+    let mut hit = false;
+    
     for e in &mut *enemies {
         for b in &mut *bullets {
             if let Some(_) = e.bounds().intersection(&b.bounds()) {
+                hit = true;
                 e.die();
                 b.die();
             }
         }
     }
+    
+    hit
     
     /*
     let mut dead_enemies: Vec<usize> = Vec::new();

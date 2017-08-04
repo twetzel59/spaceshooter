@@ -9,6 +9,7 @@ pub use attackable::Attackable;
 pub use background::Background;
 pub use resources::Resources;
 pub use ship::Ship;
+pub use scoreboard::Scoreboard;
 
 pub mod background;
 pub mod resources;
@@ -16,6 +17,7 @@ pub mod ship;
 pub mod enemies;
 pub mod bullets;
 pub mod collision;
+pub mod scoreboard;
 
 mod attackable;
 

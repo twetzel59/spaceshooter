@@ -18,6 +18,7 @@ pub mod enemies;
 pub mod bullets;
 pub mod collision;
 pub mod scoreboard;
+pub mod soundfilter;
 
 mod attackable;
 

@@ -1,3 +1,4 @@
+use sfml::audio::{SoundBuffer, SoundBufferRef};
 use sfml::graphics::{Font, Texture, TextureRef};
 
 pub struct Resources {
@@ -6,6 +7,8 @@ pub struct Resources {
     enemy: Texture,
     bullet: Texture,
     font: Font,
+    shoot: SoundBuffer,
+    kill: SoundBuffer,
 }
 
 impl Resources {
@@ -16,6 +19,8 @@ impl Resources {
             enemy: Texture::from_file("res/enemy.png").unwrap(),
             bullet: Texture::from_file("res/bullet.png").unwrap(),
             font: Font::from_file("res/UbuntuMono-B.ttf").unwrap(),
+            shoot: SoundBuffer::from_file("res/shoot.flac").unwrap(),
+            kill: SoundBuffer::from_file("res/kill.flac").unwrap(),
         }
     }
     
@@ -37,5 +42,13 @@ impl Resources {
     
     pub fn font(&self) -> &Font {
         &self.font
+    }
+    
+    pub fn shoot(&self) -> &SoundBufferRef {
+        &self.shoot
+    }
+    
+    pub fn kill(&self) -> &SoundBufferRef {
+        &self.kill
     }
 }

@@ -1,11 +1,13 @@
 use core::slice;
 use rand;
 use rand::distributions::{IndependentSample, Range};
+use sfml::audio::Sound;
 use sfml::graphics::*;
 use sfml::system::Vector2u;
 
 use attackable::*;
 use resources::Resources;
+use soundfilter;
 
 const MAX_ENEMY_NUMBER: u32 = 8;
 const WIN_SIDE_PADDING: u32 = 64;
@@ -92,6 +94,7 @@ pub struct EnemyManager<'s> {
     active: Vec<Enemy<'s>>,
     inactive: Vec<Enemy<'s>>,
     win_size: Vector2u,
+    kill_sound: Sound<'s>,
 }
 
 impl<'s> EnemyManager<'s> {
@@ -106,6 +109,7 @@ impl<'s> EnemyManager<'s> {
             active,
             inactive: Vec::with_capacity(MAX_ENEMY_NUMBER as usize),
             win_size: win_size.clone(),
+            kill_sound: Sound::with_buffer(res.kill()),
         }        
     }
     
@@ -121,6 +125,9 @@ impl<'s> EnemyManager<'s> {
             match self.active[i].check() {
                 Status::Dead => {
                     self.inactive.push(self.active.remove(i));
+                    
+                    soundfilter::filter_random(&mut self.kill_sound);
+                    self.kill_sound.play();
                 },
                 _ => {},
             }

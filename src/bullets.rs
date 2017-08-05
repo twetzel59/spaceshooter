@@ -1,9 +1,11 @@
 use core::slice;
+use sfml::audio::Sound;
 use sfml::graphics::*;
 use sfml::system::Vector2u;
 
 use attackable::*;
 use resources::Resources;
+use soundfilter;
 
 const SPEED: f32 = 1000.;
 
@@ -71,6 +73,7 @@ impl<'s> Drawable for Bullet<'s> {
 pub struct BulletManager<'s> {
     active: Vec<Bullet<'s>>,
     inactive: Vec<Bullet<'s>>,
+    shoot_sound: Sound<'s>
 }
 
 impl<'s> BulletManager<'s> {
@@ -93,6 +96,7 @@ impl<'s> BulletManager<'s> {
         BulletManager {
             active,
             inactive,
+            shoot_sound: Sound::with_buffer(res.shoot()),
         }
     }
     
@@ -121,6 +125,9 @@ impl<'s> BulletManager<'s> {
             bullet.shoot(ship_bounds);
             
             self.active.push(bullet);
+            
+            soundfilter::filter_random(&mut self.shoot_sound);
+            self.shoot_sound.play();
         }
     }
 }

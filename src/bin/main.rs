@@ -24,6 +24,7 @@ fn main() {
     
     let mut clock = Clock::start();
     
+    let mut won: bool = false;
     'game: loop {
         let delta_t = clock.restart().as_seconds();
         
@@ -31,9 +32,14 @@ fn main() {
             scoreboard.score();
         }
         bullet_mgr.update(delta_t);
-        enemy_mgr.update(delta_t);
+        match enemy_mgr.update(delta_t) {
+            WinStatus::Won => {
+                won = true;
+                break 'game;
+            }
+            _ => {},
+        }
         
-        win.clear(&Color::black());
         win.draw(&back);
         for i in &bullet_mgr {
             win.draw(i);
@@ -65,5 +71,23 @@ fn main() {
         }
         
         //ship.update();
+    }
+    
+    if won {
+        scoreboard.show_win();
+        
+        'scorescreen: loop {
+            win.draw(&back);
+            win.draw(&scoreboard);
+            win.display();
+            
+            while let Some(e) = win.poll_event() {
+                match e {
+                    Event::Closed | Event::KeyPressed { code: Key::Escape, .. } =>
+                        break 'scorescreen,
+                    _ => {},
+                }
+            }
+        }
     }
 }

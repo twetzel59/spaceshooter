@@ -26,6 +26,11 @@ impl<'s> Scoreboard<'s> {
         self.render();
     }
     
+    pub fn show_win(&mut self) {
+        self.text.set_fill_color(&Color::rgb(255, 100, 16));
+        self.text.set_character_size(26);
+    }
+    
     fn render(&mut self) {
         self.text.set_string(&format!("{}", self.score));
     }

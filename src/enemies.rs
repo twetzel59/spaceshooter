@@ -20,19 +20,22 @@ pub struct Enemy<'s> {
     dead: bool,
 }
 
+#[derive(Clone, Copy)]
+struct Arrangement {
+    my_num: u32,
+    total: u32,
+}
+
 impl<'s> Enemy<'s> {
-    fn new(res: &'s Resources, number: u32, win_size: &Vector2u) -> Enemy<'s> {
-        let mut sprite = Sprite::with_texture(res.enemy());
-        sprite.set_scale2f(0.5, 0.5);
-        
+    fn new(res: &'s Resources, arrangement: Arrangement, win_size: &Vector2u) -> Enemy<'s> {
         let mut e = Enemy {
-            sprite,
+            sprite: Sprite::with_texture(res.enemy()),
             speed: 0,
             number: 0,
             dead: false,
         };
         
-        e.spawn(number, win_size);
+        e.spawn(arrangement, win_size);
         
         e
     }
@@ -41,20 +44,30 @@ impl<'s> Enemy<'s> {
         self.sprite.move2f(0., self.speed as f32 * delta);
         
         if self.sprite.position().y > win_size.y as f32 {
-            let current_num = self.number;
-            self.spawn(current_num, win_size);
+            //let current_num = self.number;
+            self.go_to_top();
+            //self.spawn(current_num, win_size);
         }
     }
     
-    fn spawn(&mut self, number: u32, win_size: &Vector2u) {
-        self.number = number;
+    fn go_to_top(&mut self) {
+        let bounds = self.sprite.global_bounds();
+        self.sprite.set_position2f(bounds.left, -bounds.height);
+    }
+    
+    fn spawn(&mut self, arrangement: Arrangement, win_size: &Vector2u) {
+        self.number = arrangement.my_num;
+        
+        let scale = 4. / arrangement.total as f32;
+        self.sprite.set_scale2f(scale, scale);
         
         let bounds = self.sprite.global_bounds();
         let width = win_size.x - WIN_SIDE_PADDING - WIN_SIDE_PADDING;
         
-        self.sprite.set_position2f((width as f32 / ((MAX_ENEMY_NUMBER - 1) as f32)) * (self.number as f32)
+        self.sprite.set_position2f((width as f32 / ((arrangement.total - 1) as f32)) * (self.number as f32)
                                             + WIN_SIDE_PADDING as f32 + - bounds.width / 2.,
-                                   -bounds.height);
+                                   -bounds.top);
+        self.go_to_top();
         
         self.speed = Range::new(SPEED_RANGE.0, SPEED_RANGE.1).ind_sample(&mut rand::thread_rng());
         
@@ -90,30 +103,49 @@ impl<'s> Drawable for Enemy<'s> {
     }
 }
 
+#[derive(Clone, Copy)]
+pub enum WinStatus {
+    Won,
+    Playing,
+}
+
 pub struct EnemyManager<'s> {
     active: Vec<Enemy<'s>>,
     inactive: Vec<Enemy<'s>>,
     win_size: Vector2u,
     kill_sound: Sound<'s>,
+    wave: u32
 }
 
 impl<'s> EnemyManager<'s> {
     pub fn new(res: &'s Resources, win_size: &Vector2u) -> EnemyManager<'s> {
-        let mut active = Vec::with_capacity(32);
+        /*
+        let wave = 2;
+        for i in 0..wave {
+            active.push(Enemy::new(res, Arrangement { my_num: i, total: wave }, win_size));
+        }
+        */
+        
+        let mut inactive = Vec::with_capacity(32);
         
         for i in 0..MAX_ENEMY_NUMBER {
-            active.push(Enemy::new(res, i, win_size));
+            inactive.push(Enemy::new(res, Arrangement { my_num: i, total: MAX_ENEMY_NUMBER }, win_size));
         }
         
-        EnemyManager {
-            active,
-            inactive: Vec::with_capacity(MAX_ENEMY_NUMBER as usize),
+        let mut m = EnemyManager {
+            active: Vec::with_capacity(MAX_ENEMY_NUMBER as usize),
+            inactive,
             win_size: win_size.clone(),
             kill_sound: Sound::with_buffer(res.kill()),
-        }        
+            wave: 1,
+        };
+        
+        m.start_wave();
+        
+        m
     }
     
-    pub fn update(&mut self, delta: f32) {
+    pub fn update(&mut self, delta: f32) -> WinStatus {
         let mut i: usize = 0;
         loop {
             if i >= self.active.len() {
@@ -133,6 +165,27 @@ impl<'s> EnemyManager<'s> {
             }
             
             i += 1;
+        }
+        
+        if self.active.len() == 0 {
+            if self.wave < MAX_ENEMY_NUMBER {
+                self.start_wave();
+            } else {
+                return WinStatus::Won;
+            }
+        }
+        
+        WinStatus::Playing
+    }
+    
+    fn start_wave(&mut self) {
+        self.wave += 1;
+        
+        for i in 0..self.wave {
+            let mut enemy = self.inactive.pop().unwrap();
+            enemy.spawn(Arrangement { my_num: i, total: self.wave }, &self.win_size);
+            
+            self.active.push(enemy);
         }
     }
 }

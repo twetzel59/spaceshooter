@@ -7,10 +7,10 @@ use sfml::window::{ContextSettings, style, VideoMode};
 
 pub use attackable::Attackable;
 pub use background::Background;
-pub use enemies::WinStatus;
 pub use resources::Resources;
 pub use ship::Ship;
 pub use scoreboard::Scoreboard;
+pub use winstatus::WinStatus;
 
 pub mod background;
 pub mod bullets;
@@ -20,6 +20,7 @@ pub mod resources;
 pub mod scoreboard;
 pub mod ship;
 pub mod soundfilter;
+pub mod winstatus;
 
 mod attackable;
 

@@ -9,6 +9,8 @@ pub struct Resources {
     font: Font,
     shoot: SoundBuffer,
     kill: SoundBuffer,
+    win: SoundBuffer,
+    die: SoundBuffer,
 }
 
 impl Resources {
@@ -21,6 +23,8 @@ impl Resources {
             font: Font::from_file("res/UbuntuMono-B.ttf").unwrap(),
             shoot: SoundBuffer::from_file("res/shoot.flac").unwrap(),
             kill: SoundBuffer::from_file("res/kill.flac").unwrap(),
+            win: SoundBuffer::from_file("res/win.flac").unwrap(),
+            die: SoundBuffer::from_file("res/die.flac").unwrap(),
         }
     }
     
@@ -50,5 +54,13 @@ impl Resources {
     
     pub fn kill(&self) -> &SoundBufferRef {
         &self.kill
+    }
+    
+    pub fn win(&self) -> &SoundBufferRef {
+        &self.win
+    }
+    
+    pub fn die(&self) -> &SoundBufferRef {
+        &self.die
     }
 }

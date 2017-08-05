@@ -3,8 +3,9 @@
 use attackable::Attackable;
 use enemies::*;
 use bullets::*;
+use ship::*;
 
-pub fn handle_collisions(enemies: &mut EnemyManager, bullets: &mut BulletManager) -> bool {
+pub fn handle_bullets(enemies: &mut EnemyManager, bullets: &mut BulletManager) -> bool {
     let mut hit = false;
     
     for e in &mut *enemies {
@@ -35,4 +36,14 @@ pub fn handle_collisions(enemies: &mut EnemyManager, bullets: &mut BulletManager
     enemies.register_dead(&dead_enemies);
     bullets.register_dead(&dead_bullets);
     */
+}
+
+pub fn handle_ship(ship: &Ship, enemies: &EnemyManager) -> bool {
+    for e in enemies {
+        if let Some(_) = e.bounds().intersection(&ship.bounds()) {
+            return true;
+        }
+    }
+    
+    false
 }

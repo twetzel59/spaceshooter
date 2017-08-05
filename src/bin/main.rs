@@ -3,6 +3,7 @@ extern crate sfml;
 
 use spaceshooter::*;
 
+use sfml::audio::Sound;
 use sfml::graphics::*;
 use sfml::system::Clock;
 use sfml::window::{Event, Key};
@@ -22,22 +23,33 @@ fn main() {
     
     let mut scoreboard = Scoreboard::new(&res, &size);
     
-    let mut clock = Clock::start();
+    let mut won: WinStatus = WinStatus::Playing;
     
-    let mut won: bool = false;
+    let mut win_sound = Sound::with_buffer(res.win());
+    let mut die_sound = Sound::with_buffer(res.die());
+    
+    let mut clock = Clock::start();
     'game: loop {
         let delta_t = clock.restart().as_seconds();
         
-        if collision::handle_collisions(&mut enemy_mgr, &mut bullet_mgr) {
+        if collision::handle_bullets(&mut enemy_mgr, &mut bullet_mgr) {
             scoreboard.score();
         }
         bullet_mgr.update(delta_t);
         match enemy_mgr.update(delta_t) {
             WinStatus::Won => {
-                won = true;
+                scoreboard.show_win();
+                won = WinStatus::Won;
+                win_sound.play();
                 break 'game;
             }
             _ => {},
+        }
+        if collision::handle_ship(&ship, &enemy_mgr) {
+            scoreboard.show_loss();
+            won = WinStatus::Lost;
+            die_sound.play();
+            break 'game;
         }
         
         win.draw(&back);
@@ -73,21 +85,23 @@ fn main() {
         //ship.update();
     }
     
-    if won {
-        scoreboard.show_win();
-        
-        'scorescreen: loop {
-            win.draw(&back);
-            win.draw(&scoreboard);
-            win.display();
-            
-            while let Some(e) = win.poll_event() {
-                match e {
-                    Event::Closed | Event::KeyPressed { code: Key::Escape, .. } =>
-                        break 'scorescreen,
-                    _ => {},
+    match won {
+        WinStatus::Won | WinStatus::Lost => {
+            'scorescreen: loop {
+                win.draw(&back);
+                win.draw(&scoreboard);
+                win.display();
+                
+                while let Some(e) = win.poll_event() {
+                    match e {
+                        Event::Closed | Event::KeyPressed { code: Key::Escape, .. } =>
+                            break 'scorescreen,
+                        _ => {},
+                    }
                 }
             }
-        }
+        },
+        
+        _ => {},
     }
 }

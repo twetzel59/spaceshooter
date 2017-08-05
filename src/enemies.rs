@@ -8,6 +8,7 @@ use sfml::system::Vector2u;
 use attackable::*;
 use resources::Resources;
 use soundfilter;
+use winstatus::WinStatus;
 
 const MAX_ENEMY_NUMBER: u32 = 8;
 const WIN_SIDE_PADDING: u32 = 64;
@@ -101,12 +102,6 @@ impl<'s> Drawable for Enemy<'s> {
     {
         target.draw_sprite(&self.sprite, states);
     }
-}
-
-#[derive(Clone, Copy)]
-pub enum WinStatus {
-    Won,
-    Playing,
 }
 
 pub struct EnemyManager<'s> {
